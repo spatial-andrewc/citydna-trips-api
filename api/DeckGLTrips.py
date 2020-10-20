@@ -1,18 +1,14 @@
-from shapely.geometry import LineString, Point
-from shapely.ops import transform
-import pyproj
-
+import math
 
 class Trip:
     """
     A class that converts a list of stops into a DeckGL trips array
+    by calculating the time each vertex in a linestring is visited.
+    The speed of the trip is determined by an api parameter determined
+    on the front end.
     """
-    
-    geographic_crs = 'epsg:4326'
-    projected_crs = 'epsg:28355'
 
     def __init__(self, linestring_feature, m_per_second):
-        self.linestring_feature = linestring_feature
         self.coords = linestring_feature['coordinates']
         self.m_per_second = m_per_second
         self.start_time = 0
@@ -20,41 +16,58 @@ class Trip:
 
     def generate_trip(self):
         # convert to linestring
-        shapely_linestring = LineString(self.coords)
-        
-        reprojector = pyproj.Transformer.from_proj(pyproj.Proj(Trip.geographic_crs), pyproj.Proj(Trip.projected_crs), always_xy=True)
 
-        shapely_linestring_projected = transform(reprojector.transform, shapely_linestring)
+        time = self.start_time
+        timestamps = []
 
-        coordinates_projected = [list(coord_pair) for coord_pair in list(shapely_linestring_projected.coords)]
-
-        timestamps = self._get_stop_times(coordinates_projected)
+        # loop through the coordinates list
+        for i, stop in enumerate(self.coords):
+            
+            # if this is the first vertex in the linestring
+            if i == 0:
+                timestamps.append(time)
+            else:
+                # calculate distance between vertex points and convert to seconds
+                # add that to the original time.
+                j = i - 1
+                origin_coords = self.coords[j]
+                destination_coords = stop
+                path_length = self._haversine(origin_coords, destination_coords)
+                time += int(path_length / self.m_per_second)
+                timestamps.append(time)
         
         max_timestamp = max(timestamps)
-
+        
+        # return dict that will be returned to the client as a json object
         output = {
             "trip": [{"stops": self.coords, "timestamps": timestamps}],
             "max_timestamp": max_timestamp
         }
         
         return output
-    
-    
-    def _get_stop_times(self, projected_coords):
-        
-        time = self.start_time
-        time_list = []
 
-        for i, stop in enumerate(projected_coords):
-
-            if i == 0:
-                time_list.append(time)
-            else:
-                j = i - 1
-                start_coords = projected_coords[j] 
-                end_coords = stop
-                path_length = Point(start_coords).distance(Point(end_coords))
-                time += int(path_length / self.m_per_second)
-                time_list.append(time)
+    
+    def _haversine(self, point_a, point_b):
+        """
+        Helper method to calculate the ground distance (m)
+        between two geographical coordinate pairs 
         
-        return time_list
+        param: point_a (iterable): coordinate pair of starting point   
+        param: point_b (iterable): coordinate pair of destination point
+        """
+
+        # earth radius
+        radius = 6373.0
+        
+        lon1, lat1 = [math.radians(coord) for coord in point_a]
+        lon2, lat2 = [math.radians(coord) for coord in point_b]
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+        distance_m = (radius * c) * 1000
+
+        return distance_m
