@@ -5,6 +5,7 @@ import {
 } from "@material-ui/core";
 import { useViewport } from "@citydna/maps";
 import { Trip } from "./Trip";
+import { JSTrip } from "./JSTrip";
 
 /* 
   Render a waypoint icon at the centre of the map and provide
@@ -42,7 +43,8 @@ export const ToggleTrip = () => {
           {buttonText}
         </Button>
       </Box>
-      {tripStatus && <Trip setTripStatus={setTripStatus} originCoords={originCoords} />}
+      {/* {tripStatus && <Trip setTripStatus={setTripStatus} originCoords={originCoords} />} */}
+      {tripStatus && <JSTrip originCoords={originCoords} />}
     </>
   );
 };
