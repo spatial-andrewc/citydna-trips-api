@@ -46,8 +46,8 @@ export const ToggleTrip = () => {
       {/* 
         PYTrip will only run with the api active on the development server
       */}
-      {tripStatus && <PYTrip originCoords={originCoords} toggleTrip={setTripStatus} />}
-      {/* {tripStatus && <JSTrip originCoords={originCoords} toggleTrip={setTripStatus} />} */}
+      {/* {tripStatus && <PYTrip originCoords={originCoords} toggleTrip={setTripStatus} />} */}
+      {tripStatus && <JSTrip originCoords={originCoords} toggleTrip={setTripStatus} />}
     </>
   );
 };
