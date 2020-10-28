@@ -4,7 +4,8 @@ import {
   Button,
 } from "@material-ui/core";
 import { useViewport } from "@citydna/maps";
-import { Trip } from "./Trip";
+import { JSTrip } from "./JSTrip";
+import {PYTrip} from "./PYTrip"
 
 /* 
   Render a waypoint icon at the centre of the map and provide
@@ -14,6 +15,7 @@ import { Trip } from "./Trip";
 export const ToggleTrip = () => {
   const [tripStatus, setTripStatus] = useState(false);
   const [originCoords, setOriginCoords] = useState(undefined);
+  const { viewport } = useViewport();
 
   /* 
     Sets originCoords from waypoint icon location and tripStatus
@@ -26,7 +28,6 @@ export const ToggleTrip = () => {
     setTripStatus(true);
   };
 
-  const { viewport } = useViewport();
 
   const buttonText = tripStatus ? "Running trip..." : "Run Trip"
 
@@ -42,7 +43,11 @@ export const ToggleTrip = () => {
           {buttonText}
         </Button>
       </Box>
-      {tripStatus && <Trip setTripStatus={setTripStatus} originCoords={originCoords} />}
+      {/* 
+        PYTrip will only run with the api active on the development server
+      */}
+      {/* {tripStatus && <PYTrip originCoords={originCoords} toggleTrip={setTripStatus} />} */}
+      {tripStatus && <JSTrip originCoords={originCoords} toggleTrip={setTripStatus} />}
     </>
   );
 };
