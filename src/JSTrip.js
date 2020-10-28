@@ -1,18 +1,15 @@
-import React from "react"
-import {useMapboxRoute} from "./hooks/useMapboxRoute"
+import React from "react";
+import { useMapboxRouteJS } from "./hooks/useMapboxRouteJS";
+import { calculateTrip } from "./functions/calculateTrip";
+import { Trip } from "./Trip";
 
+export const JSTrip = ({ originCoords, toggleTrip }) => {
+  // make a call to useMapboxRouteJS to access Trip data
+  const tripData = useMapboxRouteJS({
+    origin: `${originCoords.longitude},${originCoords.latitude}`,
+    destination: "144.972838,-37.810903",
+    accessToken: process.env.REACT_APP_MAPBOX_DIRECTIONS_TOKEN,
+  });
 
-export const JSTrip = ({originCoords}) => {
-
-    const tripData = useMapboxRoute({
-        origin: `${originCoords.longitude},${originCoords.latitude}`,
-        destination: "144.972838,-37.810903",
-        accessToken: process.env.REACT_APP_MAPBOX_DIRECTIONS_API_ACCESS_TOKEN
-    })
-
-    console.log(process.env)
-
-
-    return <> </>
-    
-}
+  return <>{tripData && <Trip data={tripData} toggleTrip={toggleTrip} />}</>;
+};
