@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react"
-import {calculateTrip} from "../functions/calculateTrip"
 
 export const useMapboxRoutePy = ({origin, destination, accessToken}) => {
     const [tripData, setTripData] = useState()
