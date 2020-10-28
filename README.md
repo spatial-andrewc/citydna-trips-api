@@ -14,7 +14,7 @@ The repository now contains two React hooks. One that taps into the Flask-RESTfu
 
 ## Flask-RESTful api implementation
 
-**important:** Add a REACT_APP_MAPBOX_DIRECTIONS_TOKEN into your .env file to provide authentication to the Mapbox directions API.
+**important:** Add a REACT_APP_MAPBOX_DIRECTIONS_TOKEN into your .env file in the root directory to provide authentication to the Mapbox directions API.
 
 This custom api queries the [mapbox directions api](https://docs.mapbox.com/api/navigation/#directions) and prepares the json response into a consumable object for the Trip layer.
 
